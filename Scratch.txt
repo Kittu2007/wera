@@ -1,5 +1,0 @@
-POD suppliers:
-https://www.merchfactory.in/
-
-mockup:
-https://mockey.ai/
