@@ -1,0 +1,192 @@
+/* =============================================================================
+   WERA — Global Styles
+   Concept 2: "Current" (Streetwear Bold)
+   ============================================================================= */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   CSS Custom Properties — Light Mode (default)
+   --------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 6.7%;
+
+    --card: 0 0% 6.7%;
+    --card-foreground: 0 0% 100%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 53 100% 50%;
+    --accent-foreground: 0 0% 6.7%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+    --ring: 53 100% 50%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+  }
+
+  /* -------------------------------------------------------------------------
+     Dark Mode
+     The brand is already dark-first, so dark mode inverts to light
+     ------------------------------------------------------------------------- */
+  .dark {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 95%;
+
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
+
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 55%;
+
+    --accent: 53 100% 50%;
+    --accent-foreground: 0 0% 4%;
+
+    --border: 0 0% 18%;
+    --input: 0 0% 12%;
+    --ring: 53 100% 50%;
+  }
+
+  /* -------------------------------------------------------------------------
+     Base reset + typography
+     ------------------------------------------------------------------------- */
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-brand-black text-brand-white font-body;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Focus ring — accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-brand-yellow ring-offset-2 ring-offset-brand-black;
+  }
+
+  /* Selection color */
+  ::selection {
+    @apply bg-brand-yellow text-brand-black;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-brand-black;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-brand-yellow/40;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-brand-yellow/70;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Component Classes
+   --------------------------------------------------------------------------- */
+@layer components {
+  /* Brutalist heading — all caps, tight tracking */
+  .heading-brutal {
+    @apply font-heading uppercase tracking-tight;
+  }
+
+  /* Yellow CTA button */
+  .btn-primary {
+    @apply inline-flex items-center justify-center
+           bg-brand-yellow text-brand-black
+           font-heading uppercase tracking-wider
+           px-8 py-4 text-sm font-bold
+           transition-all duration-200
+           hover:bg-white hover:text-brand-black
+           active:scale-[0.98]
+           focus-visible:ring-2 focus-visible:ring-brand-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-brand-black;
+  }
+
+  /* Ghost/outline button */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center
+           border-2 border-brand-white text-brand-white
+           font-heading uppercase tracking-wider
+           px-8 py-4 text-sm font-bold
+           transition-all duration-200
+           hover:bg-brand-white hover:text-brand-black
+           active:scale-[0.98];
+  }
+
+  /* Badge — aggressive pill */
+  .badge {
+    @apply inline-flex items-center
+           bg-brand-yellow text-brand-black
+           font-heading uppercase tracking-wider
+           px-3 py-1 text-[10px] font-bold;
+  }
+
+  .badge-dark {
+    @apply inline-flex items-center
+           bg-brand-black text-brand-yellow
+           border border-brand-yellow
+           font-heading uppercase tracking-wider
+           px-3 py-1 text-[10px] font-bold;
+  }
+
+  /* Product card */
+  .product-card {
+    @apply bg-brand-black border border-transparent
+           transition-all duration-300
+           hover:border-brand-yellow hover:scale-[1.03];
+  }
+
+  /* Section container */
+  .section {
+    @apply py-section-mobile md:py-section;
+  }
+
+  /* Skeleton loader */
+  .skeleton {
+    @apply bg-gradient-to-r from-brand-black via-[#1a1a1a] to-brand-black
+           bg-[length:200%_100%] animate-shimmer;
+  }
+
+  /* Brutalist divider */
+  .divider {
+    @apply h-[2px] bg-brand-yellow w-full;
+  }
+
+  /* Announcement bar marquee */
+  .marquee-track {
+    @apply flex whitespace-nowrap animate-marquee;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Utility overrides
+   --------------------------------------------------------------------------- */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}

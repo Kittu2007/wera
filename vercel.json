@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/sync-products",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron/review-requests",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/expire-coupons",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}
