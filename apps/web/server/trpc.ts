@@ -38,7 +38,7 @@ export async function createTRPCContext(opts: { headers: Headers }) {
               supabaseId: decodedToken.uid,
               email: decodedToken.email,
               name: decodedToken.name || decodedToken.email.split("@")[0],
-              role: "CUSTOMER", // Default role
+              role: decodedToken.email === "merch.wera@gmail.com" ? "ADMIN" : "CUSTOMER",
             },
           });
         }
