@@ -1,6 +1,6 @@
 // =============================================================================
-// WERA — Login Page
-// Supabase Auth — protects admin routes
+// WERA — Login/Registration Page
+// Supabase Auth — protects admin/customer routes
 // =============================================================================
 
 "use client";
@@ -8,7 +8,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Eye, EyeOff, Lock, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Lock, UserPlus, AlertCircle, CheckCircle2 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 
 export default function LoginPage() {
@@ -17,11 +17,12 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [mode, setMode] = useState<"login" | "forgot">("login");
-  const [resetSent, setResetSent] = useState(false);
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +49,35 @@ export default function LoginPage() {
     }
   };
 
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: name },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (authError) {
+        setError(authError.message);
+        return;
+      }
+
+      setSuccessMsg("Account created! Check your email for a verification link.");
+      setMode("login");
+    } catch {
+      setError("Failed to create account.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -64,7 +94,8 @@ export default function LoginPage() {
         return;
       }
 
-      setResetSent(true);
+      setSuccessMsg("Password reset link sent! Check your inbox.");
+      setMode("login");
     } catch {
       setError("Failed to send reset email.");
     } finally {
@@ -73,7 +104,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-black flex items-center justify-center px-4">
+    <div className="min-h-screen bg-brand-black flex items-center justify-center px-4 py-20">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-12">
@@ -83,15 +114,58 @@ export default function LoginPage() {
               WERA
             </span>
           </Link>
-          <p className="text-body-sm text-[#666] mt-3">Admin login</p>
+          <p className="text-body-sm text-[#666] mt-3">
+            {mode === "signup" ? "Create your account" : "Admin login"}
+          </p>
         </div>
 
         {/* Card */}
         <div className="border border-[#222] p-8 md:p-10">
-          {mode === "login" ? (
+          {mode === "forgot" ? (
+            <>
+              <h1 className="font-heading text-h2 uppercase tracking-tight mb-4 text-center">
+                Reset Password
+              </h1>
+              <p className="text-body-sm text-[#666] mb-8 text-center">
+                Enter your email and we&apos;ll send you a reset link.
+              </p>
+
+              {error && (
+                <div className="flex items-center gap-3 border border-red-500/30
+                               bg-red-500/10 p-4 mb-6 text-red-400 text-body-sm">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleForgotPassword} className="space-y-5">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full bg-transparent border border-[#333] px-5 py-3.5
+                             text-white placeholder:text-[#555]
+                             focus:outline-none focus:border-brand-yellow"
+                  placeholder="admin@wera.in"
+                />
+                <button type="submit" disabled={isLoading} className="btn-primary w-full">
+                  {isLoading ? "Sending..." : "Send Reset Link"}
+                </button>
+              </form>
+
+              <button
+                onClick={() => { setMode("login"); setError(null); }}
+                className="w-full text-center text-body-sm text-[#666]
+                           hover:text-brand-yellow transition-colors mt-6"
+              >
+                Back to Sign In
+              </button>
+            </>
+          ) : (
             <>
               <h1 className="font-heading text-h2 uppercase tracking-tight mb-8 text-center">
-                Sign In
+                {mode === "login" ? "Sign In" : "Register"}
               </h1>
 
               {error && (
@@ -102,7 +176,33 @@ export default function LoginPage() {
                 </div>
               )}
 
-              <form onSubmit={handleLogin} className="space-y-5">
+              {successMsg && (
+                <div className="flex items-center gap-3 border border-green-500/30 bg-green-500/10
+                               p-4 mb-6 text-green-400 text-body-sm">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                  {successMsg}
+                </div>
+              )}
+
+              <form onSubmit={mode === "login" ? handleLogin : handleSignUp} className="space-y-5">
+                {mode === "signup" && (
+                  <div>
+                    <label className="font-heading text-label uppercase text-[#999] mb-2 block">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      className="w-full bg-transparent border border-[#333] px-5 py-3.5
+                                 text-white placeholder:text-[#555]
+                                 focus:outline-none focus:border-brand-yellow"
+                      placeholder="Your Name"
+                    />
+                  </div>
+                )}
+
                 <div>
                   <label className="font-heading text-label uppercase text-[#999] mb-2 block">
                     Email
@@ -129,7 +229,7 @@ export default function LoginPage() {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      autoComplete="current-password"
+                      autoComplete={mode === "login" ? "current-password" : "new-password"}
                       required
                       className="w-full bg-transparent border border-[#333] px-5 py-3.5 pr-12
                                  text-white placeholder:text-[#555]
@@ -141,7 +241,6 @@ export default function LoginPage() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-[#666]
                                  hover:text-white transition-colors"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
                     >
                       {showPassword ? (
                         <EyeOff className="w-4 h-4" />
@@ -162,88 +261,46 @@ export default function LoginPage() {
                     <>
                       <div className="w-4 h-4 border-2 border-brand-black border-t-transparent
                                      animate-spin" />
-                      Signing in...
+                      {mode === "login" ? "Signing in..." : "Creating account..."}
                     </>
                   ) : (
                     <>
-                      <Lock className="w-4 h-4" /> Sign In
+                      {mode === "login" ? (
+                        <><Lock className="w-4 h-4" /> Sign In</>
+                      ) : (
+                        <><UserPlus className="w-4 h-4" /> Create Account</>
+                      )}
                     </>
                   )}
                 </button>
               </form>
 
-              <button
-                onClick={() => {
-                  setMode("forgot");
-                  setError(null);
-                }}
-                className="w-full text-center text-body-sm text-[#666]
-                           hover:text-brand-yellow transition-colors mt-6"
-              >
-                Forgot password?
-              </button>
-            </>
-          ) : (
-            <>
-              <h1 className="font-heading text-h2 uppercase tracking-tight mb-4 text-center">
-                Reset Password
-              </h1>
-              {resetSent ? (
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-brand-yellow/10 border border-brand-yellow/30
-                                 flex items-center justify-center mx-auto mb-6">
-                    <Lock className="w-8 h-8 text-brand-yellow" />
-                  </div>
-                  <p className="text-body text-[#ccc] mb-2">Check your email</p>
-                  <p className="text-body-sm text-[#666] mb-8">
-                    We&apos;ve sent a password reset link to <strong className="text-white">{email}</strong>
-                  </p>
+              <div className="flex flex-col gap-4 mt-6">
+                <button
+                  onClick={() => {
+                    setMode(mode === "login" ? "signup" : "login");
+                    setError(null);
+                    setSuccessMsg(null);
+                  }}
+                  className="w-full text-center text-body-sm text-[#666]
+                             hover:text-brand-yellow transition-colors"
+                >
+                  {mode === "login" ? "Need an account? Sign Up" : "Already have an account? Sign In"}
+                </button>
+
+                {mode === "login" && (
                   <button
-                    onClick={() => { setMode("login"); setResetSent(false); }}
-                    className="btn-ghost w-full"
-                  >
-                    Back to Sign In
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <p className="text-body-sm text-[#666] mb-8 text-center">
-                    Enter your email and we&apos;ll send you a reset link.
-                  </p>
-
-                  {error && (
-                    <div className="flex items-center gap-3 border border-red-500/30
-                                   bg-red-500/10 p-4 mb-6 text-red-400 text-body-sm">
-                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                      {error}
-                    </div>
-                  )}
-
-                  <form onSubmit={handleForgotPassword} className="space-y-5">
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="w-full bg-transparent border border-[#333] px-5 py-3.5
-                                 text-white placeholder:text-[#555]
-                                 focus:outline-none focus:border-brand-yellow"
-                      placeholder="admin@wera.in"
-                    />
-                    <button type="submit" disabled={isLoading} className="btn-primary w-full">
-                      {isLoading ? "Sending..." : "Send Reset Link"}
-                    </button>
-                  </form>
-
-                  <button
-                    onClick={() => { setMode("login"); setError(null); }}
+                    onClick={() => {
+                      setMode("forgot");
+                      setError(null);
+                    }}
                     className="w-full text-center text-body-sm text-[#666]
-                               hover:text-brand-yellow transition-colors mt-6"
+                               hover:text-brand-yellow transition-colors"
                   >
-                    Back to Sign In
+                    Forgot password?
                   </button>
-                </>
-              )}
+                )}
+              </div>
             </>
           )}
         </div>
