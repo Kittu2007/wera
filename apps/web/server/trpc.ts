@@ -10,6 +10,7 @@ import { db } from "@/lib/db";
 import { cookies } from "next/headers";
 import { adminAuth } from "@/lib/firebase-admin";
 import type { User } from "@prisma/client";
+import type { DecodedIdToken } from "firebase-admin/auth";
 
 // ---------------------------------------------------------------------------
 // Context
@@ -20,7 +21,7 @@ export async function createTRPCContext(opts: { headers: Headers }) {
   const sessionToken = cookieStore.get("session")?.value;
 
   let user: User | null = null;
-  let decodedToken = null;
+  let decodedToken: DecodedIdToken | null = null;
 
   if (sessionToken) {
     try {
