@@ -1,6 +1,5 @@
 // =============================================================================
-// WERA — Login/Registration Page
-// Supabase Auth — protects admin/customer routes
+// WERA — Login/Registration Page (Firebase Edition)
 // =============================================================================
 
 "use client";
@@ -9,11 +8,17 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff, Lock, UserPlus, AlertCircle, CheckCircle2 } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  updateProfile
+} from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { setCookie, destroyCookie } from "nookies";
 
 export default function LoginPage() {
   const router = useRouter();
-  const supabase = createClient();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,26 +29,29 @@ export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  const handleSession = async (user: any) => {
+    const idToken = await user.getIdToken();
+    setCookie(null, "session", idToken, {
+      maxAge: 30 * 24 * 60 * 60,
+      path: "/",
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    });
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
 
     try {
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (authError) {
-        setError(authError.message);
-        return;
-      }
-
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      await handleSession(userCredential.user);
+      
       router.push("/admin");
       router.refresh();
-    } catch (err) {
-      setError("An unexpected error occurred.");
+    } catch (err: any) {
+      setError(err.message || "Invalid login credentials.");
     } finally {
       setIsLoading(false);
     }
@@ -55,24 +63,14 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const { error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { full_name: name },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: name });
+      await handleSession(userCredential.user);
 
-      if (authError) {
-        setError(authError.message);
-        return;
-      }
-
-      setSuccessMsg("Account created! Check your email for a verification link.");
-      setMode("login");
-    } catch {
-      setError("Failed to create account.");
+      setSuccessMsg("Account created successfully!");
+      router.push("/admin");
+    } catch (err: any) {
+      setError(err.message || "Failed to create account.");
     } finally {
       setIsLoading(false);
     }
@@ -84,20 +82,11 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const { error: authError } = await supabase.auth.resetPasswordForEmail(
-        email,
-        { redirectTo: `${window.location.origin}/auth/callback?next=/account` }
-      );
-
-      if (authError) {
-        setError(authError.message);
-        return;
-      }
-
+      await sendPasswordResetEmail(auth, email);
       setSuccessMsg("Password reset link sent! Check your inbox.");
       setMode("login");
-    } catch {
-      setError("Failed to send reset email.");
+    } catch (err: any) {
+      setError(err.message || "Failed to send reset email.");
     } finally {
       setIsLoading(false);
     }
@@ -115,7 +104,7 @@ export default function LoginPage() {
             </span>
           </Link>
           <p className="text-body-sm text-[#666] mt-3">
-            {mode === "signup" ? "Create your account" : "Admin login"}
+            {mode === "signup" ? "Create your account" : "Admin login (Firebase)"}
           </p>
         </div>
 
@@ -147,7 +136,7 @@ export default function LoginPage() {
                   className="w-full bg-transparent border border-[#333] px-5 py-3.5
                              text-white placeholder:text-[#555]
                              focus:outline-none focus:border-brand-yellow"
-                  placeholder="admin@wera.in"
+                  placeholder="name@gmail.com"
                 />
                 <button type="submit" disabled={isLoading} className="btn-primary w-full">
                   {isLoading ? "Sending..." : "Send Reset Link"}
@@ -170,7 +159,7 @@ export default function LoginPage() {
 
               {error && (
                 <div className="flex items-center gap-3 border border-red-500/30 bg-red-500/10
-                               p-4 mb-6 text-red-400 text-body-sm">
+                               p-4 mb-6 text-red-400 text-body-sm overflow-hidden text-ellipsis">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   {error}
                 </div>
@@ -216,7 +205,7 @@ export default function LoginPage() {
                     className="w-full bg-transparent border border-[#333] px-5 py-3.5
                                text-white placeholder:text-[#555]
                                focus:outline-none focus:border-brand-yellow"
-                    placeholder="admin@wera.in"
+                    placeholder="name@gmail.com"
                   />
                 </div>
 

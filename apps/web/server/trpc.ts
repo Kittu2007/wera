@@ -8,7 +8,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 import { db } from "@/lib/db";
 import { cookies } from "next/headers";
-import { createClient } from "@/utils/supabase/server";
+import { adminAuth } from "@/lib/firebase-admin";
 import type { User } from "@prisma/client";
 
 // ---------------------------------------------------------------------------
@@ -17,23 +17,39 @@ import type { User } from "@prisma/client";
 
 export async function createTRPCContext(opts: { headers: Headers }) {
   const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const sessionToken = cookieStore.get("session")?.value;
 
   let user: User | null = null;
+  let decodedToken = null;
 
-  if (session?.user?.id) {
-    user = await db.user.findUnique({
-      where: { supabaseId: session.user.id },
-    });
+  if (sessionToken) {
+    try {
+      decodedToken = await adminAuth.verifyIdToken(sessionToken);
+      if (decodedToken?.uid) {
+        user = await db.user.findUnique({
+          where: { supabaseId: decodedToken.uid },
+        });
+
+        // Lazy sync: If user exists in Firebase but not in our DB, create them
+        if (!user && decodedToken.email) {
+          user = await db.user.create({
+            data: {
+              supabaseId: decodedToken.uid,
+              email: decodedToken.email,
+              name: decodedToken.name || decodedToken.email.split("@")[0],
+              role: "CUSTOMER", // Default role
+            },
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Firebase token verification failed", error);
+    }
   }
 
   return {
     db,
-    supabase,
-    session,
+    session: decodedToken, // Firebase decoded token acts as session
     user,
     headers: opts.headers,
   };

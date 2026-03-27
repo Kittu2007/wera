@@ -1,21 +1,28 @@
-import { type NextRequest } from "next/server";
-import { createClient } from "@/utils/supabase/middleware";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  // The helper creates the initial response and initializes the supabase client
-  // It also handles cookie refreshing via the setAll callback
-  return createClient(request);
+export function middleware(request: NextRequest) {
+  const session = request.cookies.get("session");
+
+  // If trying to access admin routes without a session cookie
+  if (request.nextUrl.pathname.startsWith("/admin") && !session) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
+    "/admin/:path*",
+    "/account/:path*",
     /*
-     * Match all routes except:
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
      * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico
-     * - public folder files
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
   ],
 };
