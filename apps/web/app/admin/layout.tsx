@@ -13,8 +13,10 @@ import {
   Image as ImageIcon, Settings, BarChart3, MessageSquare,
   LogOut, Menu, X, ChevronRight, Bell, ExternalLink,
 } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { TRPCProvider } from "@/lib/trpc-provider";
+import { destroyCookie } from "nookies";
 
 // ---------------------------------------------------------------------------
 // Navigation items
@@ -39,28 +41,31 @@ const NAV_ITEMS = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const supabase = createClient();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
   const [adminName, setAdminName] = useState("Admin");
 
   // Check auth on mount
   useEffect(() => {
-    async function checkAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
         router.push("/login");
         return;
       }
       setIsAuthed(true);
-      setAdminName(session.user?.email?.split("@")[0] ?? "Admin");
-    }
-    checkAuth();
-  }, [router, supabase]);
+      setAdminName(user.displayName || user.email?.split("@")[0] || "Admin");
+    });
+    return () => unsubscribe();
+  }, [router]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
+    try {
+      await signOut(auth);
+      destroyCookie(null, "session", { path: "/" });
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
   if (!isAuthed) {

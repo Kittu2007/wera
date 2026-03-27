@@ -11,7 +11,9 @@ import Link from "next/link";
 import {
   Package, Heart, MapPin, User, Settings, LogOut, ChevronRight,
 } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { destroyCookie } from "nookies";
 
 const ACCOUNT_NAV = [
   { href: "/account", label: "Profile", icon: User },
@@ -24,26 +26,29 @@ const ACCOUNT_NAV = [
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const supabase = createClient();
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
-    async function checkAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
         router.push("/login");
         return;
       }
-      setUserEmail(session.user.email ?? "");
-      setUserName(session.user.user_metadata?.name ?? session.user.email?.split("@")[0] ?? "");
-    }
-    checkAuth();
-  }, [router, supabase]);
+      setUserEmail(user.email ?? "");
+      setUserName(user.displayName || user.email?.split("@")[0] || "");
+    });
+    return () => unsubscribe();
+  }, [router]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
+    try {
+      await signOut(auth);
+      destroyCookie(null, "session", { path: "/" });
+      router.push("/");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
   return (
