@@ -67,7 +67,7 @@ export default function WishlistPage() {
         </div>
       ) : wishlist && wishlist.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {wishlist.map((item) => {
+          {wishlist.map((item: any) => {
             const product = item.product;
             if (!product) return null;
 

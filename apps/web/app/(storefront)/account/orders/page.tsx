@@ -90,7 +90,7 @@ export default function OrdersPage() {
         </div>
       ) : orders && orders.items.length > 0 ? (
         <div className="space-y-4">
-          {orders.items.map((order) => (
+          {orders.items.map((order: any) => (
             <div key={order.id}>
               <button
                 onClick={() => setExpandedId(expandedId === order.id ? null : order.id)}
@@ -134,7 +134,7 @@ export default function OrdersPage() {
                         Items
                       </h4>
                       <div className="space-y-3">
-                        {detail.items.map((item) => (
+                        {detail.items.map((item: any) => (
                           <div key={item.id} className="flex gap-3">
                             <div className="w-14 h-16 bg-[#1a1a1a] flex-shrink-0 relative">
                               {item.variant.product.images[0] && (
