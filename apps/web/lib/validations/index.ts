@@ -423,6 +423,9 @@ export const qikinkWebhookSchema = z.object({
   payload: z.record(z.unknown()),
 });
 
+/** Backward-compatible alias (types/index.ts still imports this name) */
+export const merchFactoryWebhookSchema = qikinkWebhookSchema;
+
 // ---------------------------------------------------------------------------
 // Auth Schemas (for registration / login flows)
 // ---------------------------------------------------------------------------

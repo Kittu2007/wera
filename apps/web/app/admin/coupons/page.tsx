@@ -26,7 +26,7 @@ function CouponTypeBadge({ type }: { type: string }) {
 
 export default function AdminCouponsPage() {
   const utils = trpc.useUtils();
-  const { data: coupons, isLoading } = trpc.admin.couponsList.useQuery();
+  const { data: coupons, isLoading } = trpc.admin.couponsList.useQuery({});
   const deleteMutation = trpc.admin.deleteCoupon.useMutation({
     onSuccess: () => utils.admin.couponsList.invalidate(),
   });
@@ -67,7 +67,7 @@ export default function AdminCouponsPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-heading text-h1 uppercase tracking-tight text-white">Coupons</h1>
-          <p className="text-body-sm text-[#666] mt-1">{coupons?.length ?? 0} total</p>
+          <p className="text-body-sm text-[#666] mt-1">{coupons?.total ?? 0} total</p>
         </div>
         <button onClick={() => { resetForm(); setShowForm(true); }}
                 className="btn-primary py-2.5 text-xs flex items-center gap-2">
@@ -92,8 +92,8 @@ export default function AdminCouponsPage() {
             createMutation.mutate({
               code,
               type,
-              value: parseFloat(value),
-              minOrderValue: minOrderValue ? parseFloat(minOrderValue) : undefined,
+              value: value,
+              minOrderValue: minOrderValue || undefined,
               maxUses: maxUses ? parseInt(maxUses) : undefined,
               expiresAt: expiresAt ? new Date(expiresAt) : undefined,
             });
@@ -175,9 +175,9 @@ export default function AdminCouponsPage() {
             <div key={i} className="h-40 skeleton" />
           ))}
         </div>
-      ) : coupons && coupons.length > 0 ? (
+      ) : coupons && coupons.items.length > 0 ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {coupons.map((coupon) => (
+          {coupons.items.map((coupon) => (
             <div key={coupon.id}
                  className={`border p-5 transition-colors ${
                    coupon.isActive ? "border-[#222] hover:border-brand-yellow/30" : "border-[#1a1a1a] opacity-50"

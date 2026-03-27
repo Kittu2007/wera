@@ -13,7 +13,7 @@ import {
   Image as ImageIcon, Settings, BarChart3, MessageSquare,
   LogOut, Menu, X, ChevronRight, Bell, ExternalLink,
 } from "lucide-react";
-import { createBrowserSupabaseClient } from "@/lib/supabase";
+import { createBrowserSupabaseClient } from "@/lib/supabase-client";
 import { TRPCProvider } from "@/lib/trpc-provider";
 
 // ---------------------------------------------------------------------------

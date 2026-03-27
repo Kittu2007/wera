@@ -88,9 +88,9 @@ export default function OrdersPage() {
             <div key={i} className="h-24 skeleton" />
           ))}
         </div>
-      ) : orders && orders.length > 0 ? (
+      ) : orders && orders.items.length > 0 ? (
         <div className="space-y-4">
-          {orders.map((order) => (
+          {orders.items.map((order) => (
             <div key={order.id}>
               <button
                 onClick={() => setExpandedId(expandedId === order.id ? null : order.id)}
@@ -188,7 +188,7 @@ export default function OrdersPage() {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-[#666]">GST</span>
-                            <span className="text-white font-mono">₹{detail.gst}</span>
+                            <span className="text-white font-mono">₹{Number(detail.gst).toLocaleString("en-IN")}</span>
                           </div>
                           <div className="h-[1px] bg-[#222]" />
                           <div className="flex justify-between font-bold">

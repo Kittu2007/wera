@@ -214,6 +214,7 @@ export const adminRouter = createTRPCRouter({
           title: true,
           slug: true,
           salesCount: true,
+          avgRating: true,
           images: {
             where: { isPrimary: true },
             take: 1,
@@ -561,23 +562,34 @@ export const adminRouter = createTRPCRouter({
         ];
       }
 
-      const [items, total] = await Promise.all([
+      const [users, total] = await Promise.all([
         ctx.db.user.findMany({
           where,
           orderBy: { createdAt: "desc" },
           skip: (input.page - 1) * input.limit,
           take: input.limit,
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            phone: true,
-            createdAt: true,
+          include: {
+            orders: {
+              where: { status: { notIn: ["CANCELLED", "REFUNDED", "PENDING"] } },
+              select: { total: true },
+            },
             _count: { select: { orders: true } },
           },
         }),
         ctx.db.user.count({ where }),
       ]);
+
+      const items = users.map((user) => {
+        const totalSpend = user.orders.reduce(
+          (sum, o) => sum.add(o.total),
+          new Decimal(0)
+        );
+        return {
+          ...user,
+          totalSpend: totalSpend.toString(),
+          orders: undefined, // Don't send the full orders object
+        };
+      });
 
       const totalPages = Math.ceil(total / input.limit);
 
@@ -901,6 +913,86 @@ export const adminRouter = createTRPCRouter({
         },
       });
 
+      return { success: true };
+    }),
+
+  reviewsList: adminProcedure
+    .input(
+      z.object({
+        status: z.enum(["PENDING", "APPROVED"]).optional(),
+        page: z.number().int().min(1).default(1),
+        limit: z.number().int().min(1).max(50).default(20),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const where: any = {};
+      if (input.status === "PENDING") where.approved = false;
+      if (input.status === "APPROVED") where.approved = true;
+
+      const [items, total] = await Promise.all([
+        ctx.db.review.findMany({
+          where,
+          orderBy: { createdAt: "desc" },
+          skip: (input.page - 1) * input.limit,
+          take: input.limit,
+          include: {
+            user: { select: { id: true, name: true, email: true } },
+            product: { select: { id: true, title: true, slug: true } },
+          },
+        }),
+        ctx.db.review.count({ where }),
+      ]);
+
+      const totalPages = Math.ceil(total / input.limit);
+
+      return {
+        items: items.map((r) => ({
+          ...r,
+          status: r.approved ? "APPROVED" : "PENDING",
+        })),
+        total,
+        page: input.page,
+        limit: input.limit,
+        totalPages,
+        hasNext: input.page < totalPages,
+        hasPrev: input.page > 1,
+      };
+    }),
+
+  approveReview: adminProcedure
+    .input(z.object({ id: z.string().cuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const review = await ctx.db.review.update({
+        where: { id: input.id },
+        data: { approved: true },
+      });
+
+      // Recalculate product stats
+      const stats = await ctx.db.review.aggregate({
+        where: { productId: review.productId, approved: true },
+        _avg: { rating: true },
+        _count: { rating: true },
+      });
+
+      await ctx.db.product.update({
+        where: { id: review.productId },
+        data: {
+          avgRating: stats._avg.rating ?? 0,
+          reviewCount: stats._count.rating,
+        },
+      });
+
+      return review;
+    }),
+
+  rejectReview: adminProcedure
+    .input(z.object({ id: z.string().cuid() }))
+    .mutation(async ({ ctx, input }) => {
+      // Rejection deletes it for now to keep it simple, or set approved=false
+      // Rejection in this context means it's not approved.
+      // But reject mutation on frontend should probably just delete it if spam, or keep as internal rejected.
+      // For now, let's keep it consistent with delete.
+      await ctx.db.review.delete({ where: { id: input.id } });
       return { success: true };
     }),
 

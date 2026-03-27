@@ -73,7 +73,6 @@ export const useCartStore = create<CartStore>()(
 
       setCouponCode: (code) => set({ couponCode: code }),
 
-      isOpen: false,
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
       toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),

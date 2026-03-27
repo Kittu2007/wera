@@ -13,6 +13,8 @@ import { sendOrderShipped, sendOrderDelivered } from "@/lib/email";
 // Events: order.shipped, order.delivered, order.failed, product.updated, etc.
 // ---------------------------------------------------------------------------
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text();

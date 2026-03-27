@@ -11,7 +11,7 @@ import Link from "next/link";
 import {
   Package, Heart, MapPin, User, Settings, LogOut, ChevronRight,
 } from "lucide-react";
-import { createBrowserSupabaseClient } from "@/lib/supabase";
+import { createBrowserSupabaseClient } from "@/lib/supabase-client";
 
 const ACCOUNT_NAV = [
   { href: "/account", label: "Profile", icon: User },

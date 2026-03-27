@@ -16,14 +16,14 @@ export default function AdminCMSPage() {
   const utils = trpc.useUtils();
 
   const { data: banners } = trpc.admin.bannersList.useQuery();
-  const { data: blogs } = trpc.admin.blogsList.useQuery();
+  const { data: blogs } = trpc.admin.blogList.useQuery();
 
   const deleteBanner = trpc.admin.deleteBanner.useMutation({
     onSuccess: () => utils.admin.bannersList.invalidate(),
   });
 
-  const deleteBlog = trpc.admin.deleteBlog.useMutation({
-    onSuccess: () => utils.admin.blogsList.invalidate(),
+  const deleteBlog = trpc.admin.deleteBlogPost.useMutation({
+    onSuccess: () => utils.admin.blogList.invalidate(),
   });
 
   return (
@@ -68,8 +68,8 @@ export default function AdminCMSPage() {
               <div key={banner.id} className="border border-[#222] overflow-hidden
                                             hover:border-[#333] transition-colors">
                 <div className="h-40 bg-[#1a1a1a] relative">
-                  {banner.imageUrl && (
-                    <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
+                  {banner.image && (
+                    <img src={banner.image} alt={banner.title} className="w-full h-full object-cover" />
                   )}
                   <div className="absolute top-3 right-3">
                     {banner.isActive ? (
@@ -83,8 +83,8 @@ export default function AdminCMSPage() {
                   <h3 className="font-heading text-sm uppercase tracking-tight text-white mb-1">
                     {banner.title}
                   </h3>
-                  {banner.subtitle && (
-                    <p className="text-body-sm text-[#666] mb-3">{banner.subtitle}</p>
+                  {banner.ctaText && (
+                    <p className="text-body-sm text-[#666] mb-3">{banner.ctaText}</p>
                   )}
                   <div className="flex gap-2">
                     <button className="p-2 text-[#666] hover:text-brand-yellow transition-colors">
@@ -158,24 +158,26 @@ export default function AdminCMSPage() {
                 </tr>
               </thead>
               <tbody>
-                {blogs?.map((post) => (
+                {blogs?.map((post) => {
+                  const data = post.value as any;
+                  return (
                   <tr key={post.id} className="border-b border-[#1a1a1a] hover:bg-[#111] transition-colors">
                     <td className="px-6 py-4">
-                      <p className="text-body-sm text-white">{post.title}</p>
-                      <p className="text-caption text-[#555] font-mono">{post.slug}</p>
+                      <p className="text-body-sm text-white">{data?.title}</p>
+                      <p className="text-caption text-[#555] font-mono">{data?.slug}</p>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase
                                        tracking-wider border ${
-                                         post.isPublished
+                                         data?.isPublished
                                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
                                            : "bg-yellow-500/10 text-yellow-400 border-yellow-500/30"
                                        }`}>
-                        {post.isPublished ? "Published" : "Draft"}
+                        {data?.isPublished ? "Published" : "Draft"}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-body-sm text-[#666]">
-                      {new Date(post.createdAt).toLocaleDateString("en-IN")}
+                      {data?.publishedAt ? new Date(data.publishedAt).toLocaleDateString("en-IN") : "—"}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-1">
@@ -189,7 +191,7 @@ export default function AdminCMSPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                )})}
               </tbody>
             </table>
           </div>

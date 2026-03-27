@@ -20,15 +20,17 @@ export default function WishlistPage() {
   const addItem = useCartStore((s) => s.addItem);
 
   const handleMoveToCart = (item: any) => {
-    const variant = item.variants[0];
-    const image = item.images.find((i: any) => i.isPrimary) ?? item.images[0];
+    const product = item.product;
+    if (!product) return;
+    const variant = product.variants[0];
+    const image = product.images.find((i: any) => i.isPrimary) ?? product.images[0];
     if (!variant || !image) return;
 
     addItem({
       variantId: variant.id,
-      productId: item.id,
-      title: item.title,
-      slug: item.slug,
+      productId: product.id,
+      title: product.title,
+      slug: product.slug,
       size: variant.size,
       color: variant.color,
       colorHex: variant.colorHex,
@@ -66,20 +68,23 @@ export default function WishlistPage() {
       ) : wishlist && wishlist.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {wishlist.map((item) => {
-            const image = item.images.find((i: any) => i.isPrimary) ?? item.images[0];
-            const variant = item.variants[0];
-            const inStock = item.variants.some((v: any) => v.stock > 0);
+            const product = item.product;
+            if (!product) return null;
+
+            const image = product.images.find((i: any) => i.isPrimary) ?? product.images[0];
+            const variant = product.variants[0];
+            const inStock = product.variants.some((v: any) => v.stock > 0);
 
             return (
               <div key={item.id} className="group border border-[#222] hover:border-brand-yellow
                                            transition-colors">
                 {/* Image */}
-                <Link href={`/products/${item.slug}`} className="block relative aspect-[3/4]
+                <Link href={`/products/${product.slug}`} className="block relative aspect-[3/4]
                             bg-[#1a1a1a] overflow-hidden">
                   {image && (
                     <Image
                       src={image.url}
-                      alt={image.altText ?? item.title}
+                      alt={image.altText ?? product.title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                       sizes="(max-width: 768px) 50vw, 33vw"
@@ -95,10 +100,10 @@ export default function WishlistPage() {
 
                 {/* Info */}
                 <div className="p-4">
-                  <Link href={`/products/${item.slug}`}>
+                  <Link href={`/products/${product.slug}`}>
                     <h3 className="font-heading text-sm uppercase tracking-tight text-white
                                   line-clamp-2 hover:text-brand-yellow transition-colors">
-                      {item.title}
+                      {product.title}
                     </h3>
                   </Link>
                   {variant && (
@@ -124,7 +129,7 @@ export default function WishlistPage() {
                       onClick={() => toggleMutation.mutate({ productId: item.id })}
                       className="p-2.5 border border-[#333] text-[#666]
                                  hover:border-red-500 hover:text-red-500 transition-colors"
-                      aria-label={`Remove ${item.title} from wishlist`}
+                      aria-label={`Remove ${product.title} from wishlist`}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

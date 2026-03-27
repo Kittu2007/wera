@@ -4,7 +4,6 @@
 // =============================================================================
 
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { createBrowserClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 // ---------------------------------------------------------------------------
@@ -66,10 +65,3 @@ export function createServiceRoleClient() {
   });
 }
 
-// ---------------------------------------------------------------------------
-// Browser client (for client components)
-// ---------------------------------------------------------------------------
-
-export function createBrowserSupabaseClient() {
-  return createBrowserClient(supabaseUrl, supabaseAnonKey);
-}

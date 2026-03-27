@@ -46,7 +46,7 @@ export function CollectionsSpotlight() {
         name: c.name,
         slug: c.slug,
         description: c.description,
-        imageUrl: c.imageUrl,
+        imageUrl: c.image || "/images/placeholder.jpg",
       }))
     : fallback;
 

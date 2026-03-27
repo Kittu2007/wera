@@ -1,7 +1,4 @@
-// =============================================================================
-// WERA — Footer
-// Concept 2: Black footer, yellow accents, brutalist typography
-// =============================================================================
+"use client";
 
 import Link from "next/link";
 import { Instagram, Youtube, Twitter } from "lucide-react";

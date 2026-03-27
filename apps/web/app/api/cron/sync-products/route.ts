@@ -13,6 +13,8 @@ import { getProduct } from "@/lib/qikink";
 // Vercel Cron triggers this route. Protected by CRON_SECRET.
 // ---------------------------------------------------------------------------
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     // 1. Verify cron secret to prevent unauthorized access

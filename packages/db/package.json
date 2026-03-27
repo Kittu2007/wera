@@ -1,0 +1,13 @@
+{
+  "name": "@wera/db",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "@prisma/client": "^5.10.2",
+    "prisma": "^5.10.2"
+  },
+  "scripts": {
+    "generate": "prisma generate",
+    "db:push": "prisma db push"
+  }
+}

@@ -79,13 +79,18 @@ export const accountRouter = createTRPCRouter({
             "REFUNDED",
           ])
           .optional(),
+        query: z.string().trim().max(100).optional(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const where = {
+      const where: any = {
         userId: ctx.user.id,
         ...(input.status && { status: input.status }),
       };
+
+      if (input.query) {
+        where.orderNumber = { contains: input.query, mode: "insensitive" };
+      }
 
       const [items, total] = await Promise.all([
         ctx.db.order.findMany({

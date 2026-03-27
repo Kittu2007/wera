@@ -15,6 +15,8 @@ import { sendOrderConfirmed } from "@/lib/email";
 // Events: payment.captured, refund.processed, order.paid
 // ---------------------------------------------------------------------------
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     // 1. Read raw body for signature verification
@@ -93,16 +95,19 @@ export async function POST(req: NextRequest) {
 
           // Trigger confirmation email asynchronously
           try {
-            await sendOrderConfirmed(updatedOrder.email, {
-              orderNumber: updatedOrder.orderNumber,
-              customerName: updatedOrder.user?.name ?? updatedOrder.email.split("@")[0],
-              total: Number(updatedOrder.total),
-              items: updatedOrder.items.map(i => ({
-                title: i.variant.product.title,
-                quantity: i.quantity,
-                price: Number(i.price)
-              }))
-            });
+            const orderEmail = updatedOrder.user?.email ?? updatedOrder.guestEmail;
+            if (orderEmail) {
+              await sendOrderConfirmed(orderEmail, {
+                orderNumber: updatedOrder.orderNumber,
+                customerName: updatedOrder.user?.name ?? orderEmail.split("@")[0],
+                total: Number(updatedOrder.total),
+                items: updatedOrder.items.map(i => ({
+                  title: i.variant.product.title,
+                  quantity: i.quantity,
+                  price: Number(i.price)
+                }))
+              });
+            }
           } catch (e) {
             console.error("[Razorpay Webhook] Failed to send email:", e);
           }

@@ -14,6 +14,8 @@ import { db } from "@/lib/db";
 // and deactivates them.
 // ---------------------------------------------------------------------------
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     // 1. Verify cron secret

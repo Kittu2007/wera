@@ -5,12 +5,11 @@
 
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { SlidersHorizontal, Grid3X3, List, X, ChevronDown } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
 import { ProductCard, ProductCardSkeleton } from "@/components/storefront/ProductCard";
-import type { Metadata } from "next";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -47,10 +46,10 @@ const PRICE_RANGES = [
 ];
 
 // ---------------------------------------------------------------------------
-// Component
+// Main Logic Component (Requires Suspense)
 // ---------------------------------------------------------------------------
 
-export default function ProductListingPage() {
+function ProductListingPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -209,7 +208,7 @@ export default function ProductListingPage() {
               Filters
               {activeFilters.length > 0 && (
                 <span className="bg-brand-yellow text-brand-black text-[10px] font-bold
-                               w-5 h-5 flex items-center justify-center">
+                                w-5 h-5 flex items-center justify-center">
                   {activeFilters.length}
                 </span>
               )}
@@ -424,5 +423,24 @@ export default function ProductListingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Page Entry Point (Wrapped in Suspense)
+// ---------------------------------------------------------------------------
+
+export default function ProductListingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen container py-24 text-center">
+        <div className="w-8 h-8 border-4 border-brand-yellow border-t-transparent animate-spin mx-auto mb-4" />
+        <p className="font-heading text-label uppercase tracking-widest text-[#666]">
+          Loading collection...
+        </p>
+      </div>
+    }>
+      <ProductListingPageContent />
+    </Suspense>
   );
 }
