@@ -7,7 +7,8 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { db } from "@/lib/db";
-import { createServerSupabaseClient } from "@/lib/supabase";
+import { cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
 import type { User } from "@prisma/client";
 
 // ---------------------------------------------------------------------------
@@ -15,7 +16,8 @@ import type { User } from "@prisma/client";
 // ---------------------------------------------------------------------------
 
 export async function createTRPCContext(opts: { headers: Headers }) {
-  const supabase = await createServerSupabaseClient();
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
   const {
     data: { session },
   } = await supabase.auth.getSession();

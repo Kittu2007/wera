@@ -13,7 +13,7 @@ import {
   Image as ImageIcon, Settings, BarChart3, MessageSquare,
   LogOut, Menu, X, ChevronRight, Bell, ExternalLink,
 } from "lucide-react";
-import { createBrowserSupabaseClient } from "@/lib/supabase-client";
+import { createClient } from "@/utils/supabase/client";
 import { TRPCProvider } from "@/lib/trpc-provider";
 
 // ---------------------------------------------------------------------------
@@ -39,7 +39,7 @@ const NAV_ITEMS = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const supabase = createBrowserSupabaseClient();
+  const supabase = createClient();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
   const [adminName, setAdminName] = useState("Admin");

@@ -11,7 +11,7 @@ import Link from "next/link";
 import {
   Package, Heart, MapPin, User, Settings, LogOut, ChevronRight,
 } from "lucide-react";
-import { createBrowserSupabaseClient } from "@/lib/supabase-client";
+import { createClient } from "@/utils/supabase/client";
 
 const ACCOUNT_NAV = [
   { href: "/account", label: "Profile", icon: User },
@@ -24,7 +24,7 @@ const ACCOUNT_NAV = [
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const supabase = createBrowserSupabaseClient();
+  const supabase = createClient();
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
 
