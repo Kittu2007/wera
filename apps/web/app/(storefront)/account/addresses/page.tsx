@@ -8,7 +8,6 @@
 import { useState } from "react";
 import { MapPin, Plus, Edit, Trash2, Check, X } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
-
 const INDIAN_STATES = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
   "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
@@ -196,7 +195,7 @@ export default function AddressesPage() {
         </div>
       ) : addresses && addresses.length > 0 ? (
         <div className="grid md:grid-cols-2 gap-4">
-          {addresses.map((addr) => (
+          {addresses.map((addr: any) => (
             <div key={addr.id}
                  className={`border p-5 transitin-colors ${
                    addr.isDefault ? "border-brand-yellow/40" : "border-[#222] hover:border-[#333]"

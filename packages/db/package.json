@@ -8,6 +8,7 @@
   },
   "scripts": {
     "generate": "prisma generate",
-    "db:push": "prisma db push"
+    "db:push": "prisma db push",
+    "build": "prisma generate"
   }
 }
