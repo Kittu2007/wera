@@ -27,19 +27,19 @@ export function AnnouncementBar() {
               <span className="font-heading text-label uppercase whitespace-nowrap">
                 🔥 FREE SHIPPING ON ORDERS ABOVE ₹999
               </span>
-              <span className="text-brand-black/40">●</span>
+              <span className="text-brand-black/60">●</span>
               <span className="font-heading text-label uppercase whitespace-nowrap">
                 NEW DROP EVERY FRIDAY
               </span>
-              <span className="text-brand-black/40">●</span>
+              <span className="text-brand-black/60">●</span>
               <span className="font-heading text-label uppercase whitespace-nowrap">
                 EASY 7-DAY RETURNS
               </span>
-              <span className="text-brand-black/40">●</span>
+              <span className="text-brand-black/60">●</span>
               <span className="font-heading text-label uppercase whitespace-nowrap">
                 100% PRINT-ON-DEMAND — ZERO WASTE
               </span>
-              <span className="text-brand-black/40">●</span>
+              <span className="text-brand-black/60">●</span>
             </div>
           ))}
         </div>

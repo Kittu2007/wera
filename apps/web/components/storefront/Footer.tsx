@@ -37,7 +37,7 @@ export function Footer() {
             <h2 className="font-heading text-display-xl uppercase tracking-tight mb-4">
               Join the Drop
             </h2>
-            <p className="text-body-lg mb-8 text-brand-black/80">
+            <p className="text-body mb-8 text-brand-black/80">
               Get 10% off your first order + early access to new drops.
             </p>
             <form className="flex max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
@@ -76,7 +76,7 @@ export function Footer() {
                 WERA
               </span>
             </Link>
-            <p className="text-body-sm text-[#666] mt-4 max-w-[240px]">
+            <p className="text-body-sm text-[#999] mt-4 max-w-[240px]">
               Bold streetwear for the culture. Made-to-order, zero-waste,
               100% attitude.
             </p>
@@ -178,18 +178,18 @@ export function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-[#222]">
         <div className="container py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-caption text-[#555]">
+          <p className="text-caption text-[#888]">
             © {new Date().getFullYear()} WERA. All rights reserved.
           </p>
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 text-caption text-[#555]">
-              <span>✓ Secure Checkout</span>
-              <span className="text-[#333]">|</span>
-              <span>✓ Free Returns</span>
-              <span className="text-[#333]">|</span>
-              <span>✓ Made in India</span>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2 text-caption text-[#888]">
+                <span>✓ Secure Checkout</span>
+                <span className="text-[#333]">|</span>
+                <span>✓ Free Returns</span>
+                <span className="text-[#333]">|</span>
+                <span>✓ Made in India</span>
+              </div>
             </div>
-          </div>
         </div>
       </div>
     </footer>

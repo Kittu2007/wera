@@ -43,7 +43,7 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
+          DEFAULT: "#888888", // Improved contrast on black
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
@@ -63,12 +63,12 @@ const config: Config = {
         body: ["var(--font-dm-sans)", "DM Sans", "sans-serif"],
       },
       fontSize: {
-        "display-2xl": ["4.5rem", { lineHeight: "1", fontWeight: "800", letterSpacing: "-0.02em" }],
-        "display-xl": ["3.5rem", { lineHeight: "1.05", fontWeight: "700", letterSpacing: "-0.01em" }],
-        "h1": ["2.5rem", { lineHeight: "1.1", fontWeight: "700" }],
-        "h2": ["2rem", { lineHeight: "1.15", fontWeight: "600" }],
-        "h3": ["1.5rem", { lineHeight: "1.2", fontWeight: "600" }],
-        "h4": ["1.25rem", { lineHeight: "1.3", fontWeight: "500" }],
+        "display-2xl": ["2.75rem", { lineHeight: "1", fontWeight: "800", letterSpacing: "-0.02em" }], // Mobile default
+        "display-xl": ["2.25rem", { lineHeight: "1.05", fontWeight: "700", letterSpacing: "-0.01em" }], // Mobile default
+        "h1": ["2rem", { lineHeight: "1.1", fontWeight: "700" }],
+        "h2": ["1.75rem", { lineHeight: "1.15", fontWeight: "600" }],
+        "h3": ["1.25rem", { lineHeight: "1.2", fontWeight: "600" }],
+        "h4": ["1.125rem", { lineHeight: "1.3", fontWeight: "500" }],
         "body-lg": ["1.125rem", { lineHeight: "1.6", fontWeight: "400" }],
         "body": ["1rem", { lineHeight: "1.6", fontWeight: "400" }],
         "body-sm": ["0.875rem", { lineHeight: "1.5", fontWeight: "400" }],

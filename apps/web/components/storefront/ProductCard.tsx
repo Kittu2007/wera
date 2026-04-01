@@ -59,12 +59,21 @@ export function ProductCard({
 }: ProductCardProps) {
   const addItem = useCartStore((s) => s.addItem);
 
-  // Get primary image or first image
-  const primaryImage = images.find((img) => img.isPrimary) ?? images[0];
+  // Get primary image or first image, with demo fallbacks
+  const demoFallbackId = (parseInt(id.slice(-2), 16) % 4) + 1 || 1;
+  const defaultPrimaryUrl = `/demo/product-${demoFallbackId}.png`;
+  
+  const primaryImage = images.find((img) => img.isPrimary) ?? images[0] ?? {
+    url: defaultPrimaryUrl,
+    altText: title,
+  };
+
   const secondaryImage = images.find((img) => !img.isPrimary && img !== primaryImage);
 
   // Price range
-  const prices = variants.map((v) => parseFloat(String(v.price)));
+  const prices = variants.length > 0 
+    ? variants.map((v) => parseFloat(String(v.price)))
+    : [999, 1499]; // Default price for demo if no variants
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
   const hasComparePrice = variants.some((v) => v.comparePrice);
@@ -74,7 +83,7 @@ export function ProductCard({
 
   // Stock status
   const totalStock = variants.reduce((sum, v) => sum + v.stock, 0);
-  const isOutOfStock = totalStock === 0;
+  const isOutOfStock = variants.length > 0 && totalStock === 0;
 
   // Badge logic
   const badge = isOutOfStock

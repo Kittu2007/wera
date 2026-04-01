@@ -62,18 +62,18 @@ export function HeroSection() {
       aria-label="Hero banner"
     >
       <div className="container relative z-10">
-        <div className="grid lg:grid-cols-2 gap-8 items-center min-h-[75vh] md:min-h-[85vh] py-16">
+        <div className="grid lg:grid-cols-2 gap-8 items-center min-h-[60vh] md:min-h-[85vh] py-12 md:py-16">
           {/* Text side */}
-          <div className="order-2 lg:order-1">
+          <div className="order-2 lg:order-1 text-center lg:text-left">
             <h1
               className={`font-heading text-display-2xl md:text-[5.5rem] lg:text-[7rem]
-                         uppercase tracking-[-0.03em] leading-[0.85] mb-8
+                         uppercase tracking-[-0.03em] leading-[0.9] mb-6 md:mb-8
                          ${slide.textColor} transition-colors duration-700 whitespace-pre-line`}
             >
               {slide.headline}
             </h1>
             <p
-              className={`text-body-lg max-w-md mb-10
+              className={`text-body md:text-body-lg max-w-md mx-auto lg:mx-0 mb-8 md:mb-10
                          ${slide.textColor === "text-brand-black"
                            ? "text-brand-black/70"
                            : "text-white/60"
@@ -83,7 +83,7 @@ export function HeroSection() {
             </p>
             <Link
               href={slide.cta.href}
-              className={`inline-flex items-center gap-3 px-10 py-5
+              className={`inline-flex items-center gap-3 px-8 md:px-10 py-4 md:py-5
                          font-heading uppercase tracking-wider text-sm font-bold
                          transition-all duration-300 group
                          ${slide.bgColor === "bg-brand-yellow"
@@ -98,7 +98,7 @@ export function HeroSection() {
 
           {/* Image side */}
           <div className="order-1 lg:order-2 relative">
-            <div className="relative aspect-[3/4] md:aspect-square max-w-lg mx-auto lg:max-w-none">
+            <div className="relative aspect-[4/5] md:aspect-square max-w-[280px] md:max-w-lg mx-auto lg:max-w-none">
               <Image
                 src={slide.image}
                 alt="WERA featured product"
@@ -108,7 +108,7 @@ export function HeroSection() {
                 sizes="(max-width: 1024px) 80vw, 50vw"
               />
               {/* Decorative frame */}
-              <div className="absolute inset-4 border-2 border-brand-yellow/30 pointer-events-none" />
+              <div className="absolute inset-2 md:inset-4 border-2 border-brand-yellow/30 pointer-events-none" />
             </div>
           </div>
         </div>

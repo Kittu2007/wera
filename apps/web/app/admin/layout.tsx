@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { isAdmin } from "@/lib/auth-utils";
 import { TRPCProvider } from "@/lib/trpc-provider";
 import { destroyCookie } from "nookies";
 
@@ -52,6 +53,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         router.push("/login");
         return;
       }
+      
+      if (!isAdmin(user.email)) {
+        router.push("/account");
+        return;
+      }
+
       setIsAuthed(true);
       setAdminName(user.displayName || user.email?.split("@")[0] || "Admin");
     });

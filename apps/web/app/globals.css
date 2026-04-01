@@ -145,6 +145,11 @@
            px-3 py-1 text-[10px] font-bold;
   }
 
+  /* Utility for mobile touch targets */
+  .touch-target {
+    @apply min-w-[44px] min-h-[44px] flex items-center justify-center;
+  }
+
   /* Product card */
   .product-card {
     @apply bg-brand-black border border-transparent

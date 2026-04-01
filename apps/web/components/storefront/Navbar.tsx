@@ -9,6 +9,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Search, Heart, ShoppingBag, Menu, X, User } from "lucide-react";
 import { useCartStore } from "@/lib/cart-store";
+import { useIsHydrated } from "@/lib/use-is-hydrated";
 
 const NAV_LINKS = [
   { href: "/products", label: "Shop All" },
@@ -22,7 +23,8 @@ export function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const openCart = useCartStore((s) => s.openCart);
   const itemCount = useCartStore((s) => s.itemCount);
-  const count = itemCount();
+  const isHydrated = useIsHydrated();
+  const count = isHydrated ? itemCount() : 0;
 
   return (
     <header className="sticky top-0 z-40 bg-brand-black border-b border-[#222]">
@@ -31,18 +33,18 @@ export function Navbar() {
         aria-label="Main navigation"
       >
         {/* Left: Mobile menu + Logo */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           {/* Mobile menu toggle */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 -ml-2 hover:bg-[#222] transition-colors"
+            className="md:hidden touch-target hover:bg-[#222] transition-colors"
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMobileMenuOpen}
           >
             {isMobileMenuOpen ? (
-              <X className="w-5 h-5" />
+              <X className="w-6 h-6" />
             ) : (
-              <Menu className="w-5 h-5" />
+              <Menu className="w-6 h-6" />
             )}
           </button>
 
@@ -52,7 +54,7 @@ export function Navbar() {
             className="flex items-center"
             aria-label="WERA - Home"
           >
-            <span className="font-heading text-[28px] md:text-[32px] font-extrabold
+            <span className="font-heading text-h2 md:text-[32px] font-extrabold
                            tracking-[-0.03em] text-white leading-none">
               WERA
             </span>
@@ -77,11 +79,11 @@ export function Navbar() {
         </div>
 
         {/* Right: Action icons */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 md:gap-1">
           {/* Search */}
           <button
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="p-2.5 hover:bg-[#222] transition-colors relative"
+            className="touch-target hover:bg-[#222] transition-colors relative"
             aria-label="Search products"
           >
             <Search className="w-5 h-5" />
@@ -90,7 +92,7 @@ export function Navbar() {
           {/* Wishlist */}
           <Link
             href="/account/wishlist"
-            className="p-2.5 hover:bg-[#222] transition-colors hidden sm:flex"
+            className="touch-target hover:bg-[#222] transition-colors hidden sm:flex"
             aria-label="Wishlist"
           >
             <Heart className="w-5 h-5" />
@@ -99,7 +101,7 @@ export function Navbar() {
           {/* Account */}
           <Link
             href="/account"
-            className="p-2.5 hover:bg-[#222] transition-colors hidden sm:flex"
+            className="touch-target hover:bg-[#222] transition-colors hidden sm:flex"
             aria-label="Account"
           >
             <User className="w-5 h-5" />
@@ -108,15 +110,15 @@ export function Navbar() {
           {/* Cart */}
           <button
             onClick={openCart}
-            className="p-2.5 hover:bg-[#222] transition-colors relative"
+            className="touch-target hover:bg-[#222] transition-colors relative"
             aria-label={`Cart — ${count} items`}
           >
             <ShoppingBag className="w-5 h-5" />
             {count > 0 && (
               <span
-                className="absolute -top-0.5 -right-0.5 w-5 h-5
+                className="absolute top-1.5 right-1.5 w-4 h-4
                            bg-brand-yellow text-brand-black
-                           text-[10px] font-bold flex items-center justify-center"
+                           text-[9px] font-bold flex items-center justify-center"
               >
                 {count > 99 ? "99+" : count}
               </span>

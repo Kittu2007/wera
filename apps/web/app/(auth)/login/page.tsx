@@ -15,6 +15,7 @@ import {
   updateProfile
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { isAdmin } from "@/lib/auth-utils";
 import { setCookie, destroyCookie } from "nookies";
 
 export default function LoginPage() {
@@ -48,7 +49,11 @@ export default function LoginPage() {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       await handleSession(userCredential.user);
       
-      router.push("/admin");
+      if (isAdmin(userCredential.user.email)) {
+        router.push("/admin");
+      } else {
+        router.push("/account");
+      }
       router.refresh();
     } catch (err: any) {
       setError(err.message || "Invalid login credentials.");
@@ -68,7 +73,12 @@ export default function LoginPage() {
       await handleSession(userCredential.user);
 
       setSuccessMsg("Account created successfully!");
-      router.push("/admin");
+      
+      if (isAdmin(userCredential.user.email)) {
+        router.push("/admin");
+      } else {
+        router.push("/account");
+      }
     } catch (err: any) {
       setError(err.message || "Failed to create account.");
     } finally {
