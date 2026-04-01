@@ -79,6 +79,12 @@ export function CollectionsSpotlight() {
                 className="object-cover transition-transform duration-700
                            group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, 50vw"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  if (target.src.indexOf("/images/placeholder.jpg") === -1) {
+                    target.src = "/images/placeholder.jpg";
+                  }
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
               <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12">
@@ -111,6 +117,12 @@ export function CollectionsSpotlight() {
                 className="object-cover transition-transform duration-700
                            group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, 50vw"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  if (target.src.indexOf("/images/placeholder.jpg") === -1) {
+                    target.src = "/images/placeholder.jpg";
+                  }
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
               <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">

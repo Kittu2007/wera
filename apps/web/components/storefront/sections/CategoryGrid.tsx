@@ -92,6 +92,12 @@ export function CategoryGrid() {
                   ? "(max-width: 768px) 50vw, 33vw"
                   : "(max-width: 768px) 50vw, 33vw"
                 }
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  if (target.src.indexOf("/images/placeholder.jpg") === -1) {
+                    target.src = "/images/placeholder.jpg";
+                  }
+                }}
               />
 
               {/* Dark overlay */}

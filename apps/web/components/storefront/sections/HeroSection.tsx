@@ -106,6 +106,12 @@ export function HeroSection() {
                 className="object-cover object-center"
                 priority
                 sizes="(max-width: 1024px) 80vw, 50vw"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  if (target.src.indexOf("/images/placeholder.jpg") === -1) {
+                    target.src = "/images/placeholder.jpg";
+                  }
+                }}
               />
               {/* Decorative frame */}
               <div className="absolute inset-2 md:inset-4 border-2 border-brand-yellow/30 pointer-events-none" />
